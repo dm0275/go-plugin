@@ -6,6 +6,7 @@
  */
 
 plugins {
+    id("java-gradle-plugin")
     id("org.jetbrains.kotlin.jvm") version("1.9.10")
 }
 
@@ -20,5 +21,14 @@ repositories {
 kotlin {
     jvmToolchain {
         languageVersion.set(JavaLanguageVersion.of(JavaVersion.VERSION_11.majorVersion))
+    }
+}
+
+gradlePlugin {
+    plugins {
+        create("go-plugin") {
+            id = "go-plugin"
+            implementationClass = "com.fussionlabs.gradle.GoPlugin"
+        }
     }
 }
