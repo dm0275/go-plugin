@@ -10,7 +10,7 @@ open class GoTask: AbstractExecTask<GoTask>(GoTask::class.java) {
     var goTaskArgs: String = ""
 
     init {
-        if (binaryExists("go")) {
+        if (!binaryExists("go")) {
             throw GradleException("Go is either not installed or included in the PATH")
         }
     }

@@ -6,6 +6,7 @@
  */
 
 plugins {
+    id("maven-publish")
     id("java-gradle-plugin")
     id("org.jetbrains.kotlin.jvm") version("1.9.10")
 }
@@ -27,7 +28,7 @@ kotlin {
 gradlePlugin {
     plugins {
         create("go-plugin") {
-            id = "go-plugin"
+            id = "com.fussionlabs.gradle.go-plugin"
             implementationClass = "com.fussionlabs.gradle.GoPlugin"
         }
     }
