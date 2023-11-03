@@ -1,5 +1,6 @@
 package com.fussionlabs.gradle.tasks
 
+import com.fussionlabs.gradle.GO_BINARY
 import com.fussionlabs.gradle.utils.PluginUtils.binaryExists
 import org.gradle.api.GradleException
 import org.gradle.api.tasks.AbstractExecTask
@@ -10,14 +11,15 @@ open class GoTask: AbstractExecTask<GoTask>(GoTask::class.java) {
     var goTaskArgs: String = ""
 
     init {
-        if (!binaryExists("go")) {
-            throw GradleException("Go is either not installed or included in the PATH")
+        if (!binaryExists(GO_BINARY)) {
+            throw GradleException("$GO_BINARY is either not installed or included in the PATH")
         }
     }
 
     override fun exec() {
         executable = "sh"
-        args = mutableListOf("-c", "go $goTaskArgs")
+//        args = mutableListOf("-c", "echo $goTaskArgs")
+        args = mutableListOf("-c", "$GO_BINARY $goTaskArgs")
 
         super.exec()
     }
