@@ -6,8 +6,8 @@
  */
 
 plugins {
-    id("maven-publish")
     id("java-gradle-plugin")
+    id("com.gradle.plugin-publish") version "1.2.1"
     id("org.jetbrains.kotlin.jvm") version("1.9.10")
 }
 
@@ -26,10 +26,17 @@ kotlin {
 }
 
 gradlePlugin {
+    website = "https://github.com/dm0275/go-plugin"
+    vcsUrl = "https://github.com/dm0275/go-plugin.git"
     plugins {
         create("go-plugin") {
             id = "com.fussionlabs.gradle.go-plugin"
+            displayName = "Go Gradle plugin"
             implementationClass = "com.fussionlabs.gradle.GoPlugin"
+            tags = listOf("go", "golang")
+            description = "The `Go-Plugin` is a Gradle plugin for Go projects. This plugin does not intend to replace" +
+                    " Go's native dependency management system, instead this plugin focuses on replacing traditional " +
+                    "task orchestrators like Make, offering a more versatile and reusable approach for task automation."
         }
     }
 }
