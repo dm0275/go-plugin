@@ -3,6 +3,8 @@ package com.fussionlabs.gradle.tasks
 import com.fussionlabs.gradle.utils.PluginUtils.ext
 import com.fussionlabs.gradle.utils.PluginUtils.toInt
 import org.gradle.api.tasks.Input
+import org.gradle.api.tasks.InputFiles
+import org.gradle.api.tasks.OutputFile
 
 open class BuildTask: GoTask() {
     @Input
@@ -10,6 +12,18 @@ open class BuildTask: GoTask() {
 
     @Input
     var arch = ""
+
+    @Input
+    var ldFlagsConfig = mapOf<String, String>()
+
+    @InputFiles
+    var inputFiles = project.fileTree(project.rootDir)
+        .matching{ matchingFile ->
+            matchingFile.include("**/**.go")
+        }
+
+    @OutputFile
+    var outputBinary = ""
 
     override fun exec() {
         // Setup task environment
@@ -22,19 +36,24 @@ open class BuildTask: GoTask() {
         buildDir.mkdirs()
 
         // Configure build args
-        goTaskArgs = "build "
+        val buildArgs = mutableListOf("build")
 
-        // Configura ldFlags
-        if (project.ext.ldFlags.isNotEmpty()) {
-            goTaskArgs += "-ldflags=\""
-            project.ext.ldFlags.forEach { key, value ->
-                goTaskArgs += " -X \'$key=$value\' "
+        // Configure ldFlags
+        var ldFlags = ""
+        if (ldFlagsConfig.isNotEmpty()) {
+            ldFlags += "-ldflags="
+            ldFlagsConfig.forEach { (key, value) ->
+                ldFlags += " -X '$key=\"$value\"' "
             }
-            goTaskArgs += "\" "
+            buildArgs.add(ldFlags)
         }
 
         // Configure output
-        goTaskArgs += "-o $buildDir/${project.ext.moduleName}-$os-$arch ${project.rootDir}"
+        buildArgs.addAll(listOf("-o", "$buildDir/$outputBinary"))
+
+        // Configure Project DIR
+        buildArgs.add("${project.rootDir}")
+        goTaskArgs = buildArgs
 
         super.exec()
     }

@@ -28,8 +28,13 @@ class GoPlugin: Plugin<Project> {
                         it.group = GO_PLUGIN_GROUP
                         it.description = "Build $osType $archType"
 
+                        // Configure Inputs
                         it.os = osType
                         it.arch = archType
+                        it.ldFlagsConfig = project.ext.ldFlags
+
+                        // Configure output
+                        it.outputBinary = "${project.ext.moduleName}-$osType-$archType"
                     }
                     buildTask.dependsOn(task)
                 }

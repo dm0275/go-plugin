@@ -8,7 +8,7 @@ import org.gradle.api.tasks.Input
 
 open class GoTask: AbstractExecTask<GoTask>(GoTask::class.java) {
     @Input
-    var goTaskArgs: String = ""
+    var goTaskArgs: MutableList<String> = mutableListOf()
 
     init {
         if (!binaryExists(GO_BINARY)) {
@@ -17,9 +17,8 @@ open class GoTask: AbstractExecTask<GoTask>(GoTask::class.java) {
     }
 
     override fun exec() {
-        executable = "sh"
-//        args = mutableListOf("-c", "echo $goTaskArgs")
-        args = mutableListOf("-c", "$GO_BINARY $goTaskArgs")
+        executable = GO_BINARY
+        args = goTaskArgs
 
         super.exec()
     }
