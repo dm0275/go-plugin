@@ -25,6 +25,15 @@ kotlin {
     }
 }
 
+dependencies {
+    testImplementation(platform("org.junit:junit-bom:5.10.1"))
+    testImplementation("org.junit.jupiter:junit-jupiter")
+}
+
+tasks.test {
+    useJUnitPlatform()
+}
+
 gradlePlugin {
     website = "https://github.com/dm0275/go-plugin"
     vcsUrl = "https://github.com/dm0275/go-plugin.git"
