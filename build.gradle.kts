@@ -11,7 +11,7 @@ plugins {
     id("org.jetbrains.kotlin.jvm") version("1.9.10")
 }
 
-version = "0.5.1"
+version = "0.5.2"
 group = "com.fussionlabs.gradle"
 
 repositories {
