@@ -34,8 +34,14 @@ jobs:
 
       # Validate
       - name: Validate
+        env:
+          GRADLE_PUBLISH_KEY: ${{ secrets.gradlePublishKey }}
+          GRADLE_PUBLISH_SECRET: ${{ secrets.gradlePublishSecret }}
         run: ./gradlew publishPlugins --validate-only
 
       # Publish the plugin
       - name: Publish
-        run: ./gradlew publishPlugins -Pgradle.publish.key=${{ secrets.gradlePublishKey }} -Pgradle.publish.secret=${{ secrets.gradlePublishSecret }}
+        env:
+          GRADLE_PUBLISH_KEY: ${{ secrets.gradlePublishKey }}
+          GRADLE_PUBLISH_SECRET: ${{ secrets.gradlePublishSecret }}
+        run: ./gradlew publishPlugins
