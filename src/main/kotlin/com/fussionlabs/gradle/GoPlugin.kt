@@ -21,32 +21,36 @@ class GoPlugin: Plugin<Project> {
         }
 
         project.afterEvaluate {
+            val checkTask = project.tasks.getByName("check")
             val buildTask = project.tasks.getByName("build")
 
             // Setup build tasks
             project.ext.os.forEach { osType ->
                 project.ext.arch.forEach { archType ->
-                    val task = project.tasks.register("goBuild${osType.capitalized()}${archType.capitalized()}", BuildTask::class.java) {
-                        it.group = GO_PLUGIN_GROUP
-                        it.description = "Build $osType $archType"
+                    val task = project.tasks.register("goBuild${osType.capitalized()}${archType.capitalized()}", BuildTask::class.java) { goBuildTask ->
+                        goBuildTask.group = GO_PLUGIN_GROUP
+                        goBuildTask.description = "Build $osType $archType"
 
                         // Configure Inputs
-                        it.os = osType
-                        it.arch = archType
-                        it.ldFlagsConfig = project.ext.ldFlags
+                        goBuildTask.os = osType
+                        goBuildTask.arch = archType
+                        goBuildTask.ldFlagsConfig = project.ext.ldFlags
 
                         // Configure output
-                        it.outputBinary = "${project.ext.moduleName}-$osType-$archType"
+                        goBuildTask.outputBinary = "${project.ext.moduleName}-$osType-$archType"
                     }
                     buildTask.dependsOn(task)
                 }
             }
 
             // Setup test task
-            project.tasks.register("test", TestTask::class.java) {
-                it.group = GO_PLUGIN_GROUP
-                it.description = "Run tests"
+            val testTask = project.tasks.register("test", TestTask::class.java) { testTask ->
+                testTask.group = GO_PLUGIN_GROUP
+                testTask.description = "Run tests"
+
             }
+
+            checkTask.dependsOn(testTask)
         }
     }
 }
