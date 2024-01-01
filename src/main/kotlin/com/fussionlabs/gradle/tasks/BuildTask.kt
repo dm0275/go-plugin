@@ -51,6 +51,11 @@ open class BuildTask: GoTask() {
         // Configure output
         buildArgs.addAll(listOf("-o", "$buildDir/$outputBinary"))
 
+        // Add extraTestArgs (if defined)
+        project.ext.extraBuildArgs.forEach { testArg ->
+            buildArgs.add(testArg)
+        }
+
         // Configure Project DIR
         buildArgs.add("${project.rootDir}")
         goTaskArgs = buildArgs

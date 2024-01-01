@@ -6,4 +6,6 @@ open class PluginExtension {
     var os:List<String> = listOf("linux", "darwin")
     var arch:List<String> = listOf("arm64", "amd64")
     var ldFlags:Map<String, String> = mapOf()
+    var extraBuildArgs:List<String> = listOf()
+    var extraTestArgs:List<String> = listOf()
 }

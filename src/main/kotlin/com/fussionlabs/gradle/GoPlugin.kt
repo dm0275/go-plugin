@@ -1,6 +1,7 @@
 package com.fussionlabs.gradle
 
 import com.fussionlabs.gradle.tasks.BuildTask
+import com.fussionlabs.gradle.tasks.TestTask
 import com.fussionlabs.gradle.utils.PluginUtils.ext
 import org.gradle.api.Plugin
 import org.gradle.api.Project
@@ -19,9 +20,10 @@ class GoPlugin: Plugin<Project> {
             project.ext.moduleName = project.name
         }
 
-        // Setup build tasks
         project.afterEvaluate {
             val buildTask = project.tasks.getByName("build")
+
+            // Setup build tasks
             project.ext.os.forEach { osType ->
                 project.ext.arch.forEach { archType ->
                     val task = project.tasks.register("goBuild${osType.capitalized()}${archType.capitalized()}", BuildTask::class.java) {
@@ -38,6 +40,12 @@ class GoPlugin: Plugin<Project> {
                     }
                     buildTask.dependsOn(task)
                 }
+            }
+
+            // Setup test task
+            project.tasks.register("test", TestTask::class.java) {
+                it.group = GO_PLUGIN_GROUP
+                it.description = "Run tests"
             }
         }
     }
