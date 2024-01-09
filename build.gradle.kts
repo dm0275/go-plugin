@@ -6,12 +6,13 @@
  */
 
 plugins {
+    id("jacoco")
     id("java-gradle-plugin")
     id("com.gradle.plugin-publish") version "1.2.1"
     id("org.jetbrains.kotlin.jvm") version("1.9.10")
 }
 
-version = "0.5.4"
+version = "0.5.5"
 group = "com.fussionlabs.gradle"
 
 repositories {
@@ -32,6 +33,13 @@ dependencies {
 
 tasks.test {
     useJUnitPlatform()
+    finalizedBy(tasks.jacocoTestReport)
+}
+
+tasks.jacocoTestReport {
+    reports {
+        html.required = true
+    }
 }
 
 gradlePlugin {
