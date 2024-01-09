@@ -27,9 +27,9 @@ open class BuildTask: GoTask() {
 
     override fun exec() {
         // Setup task environment
-        environment("GOOS", os)
-        environment("GOARCH", arch)
-        environment("CGO_ENABLED", project.ext.cgoEnabled.toInt())
+        goTaskEnv["GOOS"] = os
+        goTaskEnv["GOARCH"] = arch
+        goTaskEnv["CGO_ENABLED"] = project.ext.cgoEnabled.toInt()
 
         // Setup build dir
         val buildDir = project.layout.buildDirectory.get().asFile

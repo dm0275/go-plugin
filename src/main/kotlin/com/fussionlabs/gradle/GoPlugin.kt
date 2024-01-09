@@ -1,6 +1,7 @@
 package com.fussionlabs.gradle
 
 import com.fussionlabs.gradle.tasks.BuildTask
+import com.fussionlabs.gradle.tasks.InstallTask
 import com.fussionlabs.gradle.tasks.TestTask
 import com.fussionlabs.gradle.utils.PluginUtils.ext
 import org.gradle.api.Plugin
@@ -23,6 +24,13 @@ class GoPlugin: Plugin<Project> {
         project.afterEvaluate {
             val checkTask = project.tasks.getByName("check")
             val buildTask = project.tasks.getByName("build")
+
+            // Setup install task
+            project.tasks.register(GO_INSTALL_TASK, InstallTask::class.java) { installTask ->
+                installTask.group = GO_PLUGIN_GROUP
+                installTask.description = "Install Golang"
+
+            }
 
             // Setup build tasks
             project.ext.os.forEach { osType ->
