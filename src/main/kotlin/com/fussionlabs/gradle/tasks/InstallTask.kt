@@ -34,6 +34,9 @@ open class InstallTask: DefaultTask() {
         val outputLocation = "$buildDir/go${goVersion}.${getOs()}-${getArch()}.tar.gz"
 
         if (!File(goBinary(project)).exists()) {
+            // Setup the build directory
+            buildDir.mkdirs()
+
             val outputFile = File(outputLocation)
             outputFile.createNewFile()
 
