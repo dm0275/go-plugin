@@ -45,10 +45,12 @@ open class InstallTask: DefaultTask() {
 
             // Download the file
             logger.lifecycle("Downloading Go version $goVersion")
+            logger.info("Source URL: $url")
+            logger.info("Destination Path: $destinationDir")
             PluginUtils.downloadFile(url, outputFile)
 
             // Extract the file
-            logger.lifecycle("Extracting archive")
+            logger.lifecycle("Extracting tar.gz archive")
             PluginUtils.extractTarGz(project, outputFile, destinationDir)
 
             logger.lifecycle("Done")
