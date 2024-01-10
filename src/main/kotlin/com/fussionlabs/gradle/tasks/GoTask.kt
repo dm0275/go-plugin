@@ -38,7 +38,7 @@ open class GoTask: AbstractExecTask<GoTask>(GoTask::class.java) {
             environment(key, value)
         }
 
-        logger.info("goTaskEnv: $environment")
+        logger.info("goTaskEnv: $goTaskEnv")
         logger.info("goTaskArgs: $goTaskArgs")
 
         super.exec()
