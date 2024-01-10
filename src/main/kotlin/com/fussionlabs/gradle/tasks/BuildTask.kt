@@ -60,9 +60,6 @@ open class BuildTask: GoTask() {
         buildArgs.add("${project.rootDir}")
         goTaskArgs = buildArgs
 
-        logger.info("goTaskEnv: $goTaskEnv")
-        logger.info("goTaskArgs: $goTaskArgs")
-
         super.exec()
     }
 }

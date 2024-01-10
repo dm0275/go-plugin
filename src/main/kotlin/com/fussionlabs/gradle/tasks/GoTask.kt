@@ -27,15 +27,19 @@ open class GoTask: AbstractExecTask<GoTask>(GoTask::class.java) {
         val goVersion = project.ext.goVersion
         val goBinary = goBinary(project)
 
+        // Configure GOROOT (if needed)
+        if (goBinary != GO_BINARY) {
+            goTaskEnv["GOROOT"] = "${project.rootDir}/$GRADLE_FILES_DIR/$GO_SETUP_DIR-$goVersion/go"
+        }
+
         executable = goBinary
         args = goTaskArgs
         goTaskEnv.forEach { (key, value) ->
             environment(key, value)
         }
 
-        if (goBinary != GO_BINARY) {
-            environment("GOROOT", "${project.rootDir}/$GRADLE_FILES_DIR/$GO_SETUP_DIR-$goVersion/go")
-        }
+        logger.info("goTaskEnv: $environment")
+        logger.info("goTaskArgs: $goTaskArgs")
 
         super.exec()
     }

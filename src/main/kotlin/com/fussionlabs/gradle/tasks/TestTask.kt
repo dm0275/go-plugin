@@ -29,9 +29,6 @@ open class TestTask: GoTask() {
         testArgs.add("${project.rootDir}/...")
         goTaskArgs = testArgs
 
-        logger.info("goTaskEnv: $goTaskEnv")
-        logger.info("goTaskArgs: $goTaskArgs")
-
         super.exec()
     }
 }
