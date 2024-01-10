@@ -24,8 +24,10 @@ open class GoTask: AbstractExecTask<GoTask>(GoTask::class.java) {
     }
 
     override fun exec() {
-        val goVersion = project.ext.goVersion
         val goBinary = goBinary(project)
+        val goVersion = project.ext.goVersion.ifEmpty {
+            project.ext.defaultGoVersion
+        }
 
         // Configure GOROOT (if needed)
         if (goBinary != GO_BINARY) {
