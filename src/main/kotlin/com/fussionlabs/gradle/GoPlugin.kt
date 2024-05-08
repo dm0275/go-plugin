@@ -23,7 +23,7 @@ class GoPlugin: Plugin<Project> {
 
         project.afterEvaluate {
             val checkTask = project.tasks.getByName("check")
-            val buildTask = project.tasks.getByName("build")
+            val assembleTask = project.tasks.getByName("assemble")
 
             // Setup install task
             project.tasks.register(GO_INSTALL_TASK, InstallTask::class.java) { installTask ->
@@ -47,7 +47,7 @@ class GoPlugin: Plugin<Project> {
                         // Configure output
                         goBuildTask.outputBinary = "${project.ext.moduleName}-$osType-$archType"
                     }
-                    buildTask.dependsOn(task)
+                    assembleTask.dependsOn(task)
                 }
             }
 
