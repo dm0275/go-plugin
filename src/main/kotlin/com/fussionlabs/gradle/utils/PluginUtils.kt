@@ -7,14 +7,8 @@ import com.fussionlabs.gradle.PluginExtension
 import org.apache.tools.ant.taskdefs.condition.Os
 import org.gradle.api.GradleException
 import org.gradle.api.Project
-import org.gradle.api.file.FileCopyDetails
-import org.gradle.api.file.RelativePath
-import org.gradle.internal.impldep.org.apache.tools.tar.TarEntry
-import org.gradle.internal.impldep.org.apache.tools.tar.TarInputStream
 import java.io.*
 import java.net.URL
-import java.util.zip.GZIPInputStream
-import java.util.zip.ZipException
 
 object PluginUtils {
     val Project.ext: PluginExtension
@@ -81,7 +75,7 @@ object PluginUtils {
     }
 
     fun goBinary(project: Project): String {
-        val goVersion = goVersion(project)
+        val goVersion = project.ext.goVersion
         return if(goInstalled() && goVersion.isEmpty()) {
             GO_BINARY
         } else {
