@@ -25,10 +25,7 @@ The go-plugin offers the following built-in tasks:
 ```
 Go tasks
 --------
-goBuildDarwinAmd64 - Build darwin amd64 binary
-goBuildDarwinArm64 - Build darwin arm64 binary
-goBuildLinuxAmd64 - Build linux amd64 binary
-goBuildLinuxArm64 - Build linux arm64 binary
+goBuild<Os><Arch> - Build the configured OS/architecture binary
 installGo - Install Golang (will only run if Go is not installed locally or if goVersion is defined)
 test - Run tests
 ```
@@ -36,26 +33,36 @@ test - Run tests
 ## Configuration
 The plugin can be easily configured using an extension with the following customizable fields:
 
-| Field Name       | Type                  | Description                                               | Default Value               |
-|------------------|-----------------------|-----------------------------------------------------------|-----------------------------|
-| `cgoEnabled`     | `Boolean`             | Enable or disable the `CGO_ENABLED` option for builds.    | `false`                     |
-| `os`             | `List<String>`        | Specify the target Operating Systems for builds.          | `listOf("linux", "darwin")` |
-| `arch`           | `List<String>`        | Specify the target Architectures for builds.              | `listOf("arm64", "amd64")`  |
-| `ldFlags`        | `Map<String, String>` | Set custom ldflags for use during builds.                 | `mapOf<String, String>()`   |
-| `goVersion`      | `String`              | Go version to install                                     | `1.21.6`                    |
-| `extraBuildArgs` | `List<String>`        | Extra build arguments to pass to `goBuild$Os$Arch` tasks. | `listOf<String>()`          |
-| `extraTestArgs`  | `List<String>`        | Extra test arguments to `test` task.                      | `listOf<String>()`          |
+| Field Name       | Type                       | Description                                               | Default Value               |
+|------------------|----------------------------|-----------------------------------------------------------|-----------------------------|
+| `moduleName`     | `Property<String>`         | Name used for output binaries.                            | project name                |
+| `cgoEnabled`     | `Property<Boolean>`        | Enable or disable the `CGO_ENABLED` option for builds.    | `false`                     |
+| `os`             | `List<String>`             | Target operating systems.                                 | `GOOS`, then host OS        |
+| `arch`           | `List<String>`             | Target architectures.                                     | `GOARCH`, then host CPU     |
+| `ldFlags`        | `MapProperty<String, String>` | Set custom ldflags for use during builds.              | empty map                   |
+| `goVersion`      | `Property<String>`         | Go version to install.                                    | `1.21.6`                    |
+| `extraBuildArgs` | `ListProperty<String>`     | Extra build arguments to pass to `goBuild$Os$Arch` tasks. | empty list                  |
+| `extraTestArgs`  | `ListProperty<String>`     | Extra test arguments to `test` task.                      | empty list                  |
+
+`installGo`, `test`, and the default `goBuild*` task are registered as soon as the plugin is applied; no `afterEvaluate` hook is used. Per dimension, an explicit `os` / `arch` assignment takes precedence over `GOOS` / `GOARCH`; those environment variables take precedence over the detected host platform. Use `addOs` / `addArch` to add targets. Gradle does not support unregistering created tasks, so replaced targets are disabled and skipped by `assemble`.
 
 ### Example Configuration
 ```kotlin
 go {
-    cgoEnabled = true
+    cgoEnabled.set(true)
     os = listOf("linux")
     arch = listOf("amd64")
-    goVersion = "1.20.13"
-    ldFlags = mapOf("key1" to "value1", "key2" to "value2")
-    extraBuildArgs = listOf("arg1", "arg2")
-    extraTestArgs = listOf("arg3", "arg4")
+    goVersion.set("1.20.13")
+    ldFlags.set(mapOf("key1" to "value1", "key2" to "value2"))
+    extraBuildArgs.set(listOf("arg1", "arg2"))
+    extraTestArgs.set(listOf("arg3", "arg4"))
+}
+```
+
+To add a build target while keeping the defaults:
+```kotlin
+go {
+    addOs("windows")
 }
 ```
 
@@ -63,6 +70,6 @@ go {
 In addition to the default tasks, you can create custom Go tasks for basically any Go command:
 ```kotlin
 tasks.register("goVersion", com.fussionlabs.gradle.tasks.GoTask::class.java) {
-    goTaskArgs = mutableListOf("version")
+    goTaskArgs.add("version")
 }
 ```

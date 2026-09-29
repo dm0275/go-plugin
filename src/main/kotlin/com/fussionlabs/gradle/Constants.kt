@@ -8,3 +8,5 @@ const val GO_INSTALL_TASK = "installGo"
 
 const val GO_SETUP_DIR = "go"
 const val GRADLE_FILES_DIR = ".gradle"
+
+const val DEFAULT_GO_VERSION = "1.21.6"

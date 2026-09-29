@@ -4,44 +4,64 @@ import com.fussionlabs.gradle.GO_BINARY
 import com.fussionlabs.gradle.GO_INSTALL_TASK
 import com.fussionlabs.gradle.GO_SETUP_DIR
 import com.fussionlabs.gradle.GRADLE_FILES_DIR
-import com.fussionlabs.gradle.utils.PluginUtils.binaryExists
-import com.fussionlabs.gradle.utils.PluginUtils.ext
-import com.fussionlabs.gradle.utils.PluginUtils.goBinary
-import org.gradle.api.GradleException
+import com.fussionlabs.gradle.utils.PluginUtils.goInstalled
+import org.gradle.api.file.DirectoryProperty
+import org.gradle.api.provider.ListProperty
+import org.gradle.api.provider.MapProperty
+import org.gradle.api.provider.Property
 import org.gradle.api.tasks.AbstractExecTask
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.Internal
 
-open class GoTask: AbstractExecTask<GoTask>(GoTask::class.java) {
-    @Input
-    var goTaskArgs: MutableList<String> = mutableListOf()
+abstract class GoTask: AbstractExecTask<GoTask>(GoTask::class.java) {
+    /**
+     * Command arguments are assembled by concrete tasks immediately before the
+     * process runs. BuildTask and TestTask expose the values that compose these
+     * arguments as individual inputs.
+     */
+    @get:Internal
+    abstract val goTaskArgs: ListProperty<String>
 
-    @Internal
-    var goTaskEnv: MutableMap<String, Any> = mutableMapOf()
+    @get:Internal
+    abstract val goTaskEnv: MapProperty<String, String>
+
+    @get:Input
+    abstract val configuredGoVersion: Property<String>
+
+    @get:Input
+    abstract val defaultGoVersion: Property<String>
+
+    @get:Internal
+    abstract val projectRoot: DirectoryProperty
 
     init {
         dependsOn(GO_INSTALL_TASK)
+        goTaskArgs.convention(emptyList())
+        goTaskEnv.convention(emptyMap())
     }
 
     override fun exec() {
-        val goBinary = goBinary(project)
-        val goVersion = project.ext.goVersion.ifEmpty {
-            project.ext.defaultGoVersion
+        val goVersion = configuredGoVersion.get().ifEmpty {
+            defaultGoVersion.get()
+        }
+        val goBinary = if (goInstalled() && configuredGoVersion.get().isEmpty()) {
+            GO_BINARY
+        } else {
+            "${projectRoot.get().asFile}/$GRADLE_FILES_DIR/$GO_SETUP_DIR-$goVersion/go/bin/$GO_BINARY"
         }
 
-        // Configure GOROOT (if needed)
         if (goBinary != GO_BINARY) {
-            goTaskEnv["GOROOT"] = "${project.rootDir}/$GRADLE_FILES_DIR/$GO_SETUP_DIR-$goVersion/go"
+            goTaskEnv.put("GOROOT", "${projectRoot.get().asFile}/$GRADLE_FILES_DIR/$GO_SETUP_DIR-$goVersion/go")
         }
 
         executable = goBinary
-        args = goTaskArgs
-        goTaskEnv.forEach { (key, value) ->
+        args = goTaskArgs.get()
+        goTaskEnv.get().forEach { (key, value) ->
             environment(key, value)
         }
 
-        logger.info("goTaskEnv: $goTaskEnv")
-        logger.info("goTaskArgs: $goTaskArgs")
+        logger.info("goTaskEnv: ${goTaskEnv.get()}")
+        logger.info("goTaskArgs: ${goTaskArgs.get()}")
 
         super.exec()
     }
